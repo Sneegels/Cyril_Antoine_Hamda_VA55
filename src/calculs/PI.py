@@ -10,7 +10,7 @@ class PIController:
     Contrôleur proportionnel-intégral.
     """
 
-    def __init__(self, kp, ki, setpoint, max_history=10):
+    def __init__(self, kp, ki, setpoint, max_history=9999999999):
         self.kp = kp
         self.ki = ki
         self.setpoint = setpoint

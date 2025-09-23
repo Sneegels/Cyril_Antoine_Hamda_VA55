@@ -11,7 +11,7 @@ class PIDController:
     Contrôleur PID pour suivi de ligne.
     """
 
-    def __init__(self, *, kp, ki, kd, setpoint, max_history=10):
+    def __init__(self, *, kp, ki, kd, setpoint, max_history=99999999999999):
         """
         Initialise le contrôleur PID.
 

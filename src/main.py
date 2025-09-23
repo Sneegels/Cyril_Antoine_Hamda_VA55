@@ -107,36 +107,37 @@ from calculs.PID import PIDController
 #     print("PID 1m terminé - Temps:", total_time, "s")
 
 def test_pid_track(motors, color_sensor, logger, sound_light):
-    """Test 3: PID sur tapis de course complet"""
-    print("=== TEST PID SUIVI DE LIGNE ===")
+    """Test 3: PID ULTRA RAPIDE ET STABLE"""
+    print("=== TEST PID RAPIDE ===")
     sound_light.play_tone(1000, 500)
     
-    controller = PIDController(kp=3.0, ki=0.1, kd=0.5, setpoint=25)
-    base_speed = 180  # Vitesse augmentée mais raisonnable
+    # PARAMÈTRES OPTIMISÉS POUR VITESSE + STABILITÉ
+    controller = PIDController(kp=0.8, ki=0.03, kd=0, setpoint=40)
+    base_speed = 250  # RAPIDE
     start_time = time.time()
     
     for i in range(500):
         reflection = color_sensor.get_reflection()
         
-        # UNE SEULE LOGIQUE PID - TOUJOURS LA MÊME
+        # PID OPTIMISÉ
         error = controller.setpoint - reflection
         correction = controller.compute(reflection)
         
-        # Application directe de la correction
+        # VITESSES ÉLEVÉES MAIS CONTRÔLÉES
         left_speed = base_speed - correction
         right_speed = base_speed + correction
         
-        # Déterminer statut pour les logs
+        # LIMITES ÉLEVÉES POUR LA VITESSE
+        left_speed = max(80, min(320, int(left_speed)))   # Plus rapide !
+        right_speed = max(80, min(320, int(right_speed))) # Plus rapide !
+        
+        # Statut
         if reflection < 20:
             status = "on_black"
         elif reflection > 40:
             status = "on_white"  
         else:
             status = "on_edge"
-        
-        # Limiter les vitesses - VALEURS SÛRES
-        left_speed = max(50, min(250, int(left_speed)))
-        right_speed = max(50, min(250, int(right_speed)))
         
         print("L: " + str(left_speed) + ", R: " + str(right_speed))
 
@@ -155,7 +156,7 @@ def test_pid_track(motors, color_sensor, logger, sound_light):
         logger.log(log_data)
         
         motors.drive(left_speed, right_speed)
-        time.sleep(0.08)  # Légèrement plus rapide: 12.5Hz
+        time.sleep(0.04)  # TRÈS RAPIDE : 25Hz au lieu de 12.5Hz
     
     motors.stop()
     total_time = time.time() - start_time
