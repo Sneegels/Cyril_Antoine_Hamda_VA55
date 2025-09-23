@@ -1,0 +1,23 @@
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\main.py:2:80: E501 line too long (88 > 79 characters)
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\main.py:13:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\main.py:16:80: E501 line too long (86 > 79 characters)
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\main.py:37:1: E305 expected 2 blank lines after class or function definition, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\actuators\motor_controller.py:3:80: E501 line too long (85 > 79 characters)
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\actuators\motor_controller.py:3:86: W291 trailing whitespace
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\actuators\motor_controller.py:4:80: E501 line too long (85 > 79 characters)
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\actuators\motor_controller.py:5:80: E501 line too long (81 > 79 characters)
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\actuators\motor_controller.py:11:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\actuators\sound_light.py:10:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\actuators\sound_light.py:50:80: E501 line too long (81 > 79 characters)
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\calculs\bangbang.py:7:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\calculs\p.py:7:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\calculs\pi.py:8:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\calculs\pid.py:9:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\calculs\pid.py:23:80: E501 line too long (97 > 79 characters)
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\core\lcd_display.py:3:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\core\lcd_display.py:20:49: E226 missing whitespace around arithmetic operator
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\core\logger.py:4:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\core\robot_status.py:28:10: W292 no newline at end of file
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\core\wireless.py:3:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\sensors\color_sensor.py:4:1: E302 expected 2 blank lines, found 1
+C:\Users\nix3r\Nextcloud\UTBM\Cours\2025-2026\VA55 - ContrÃ´le basÃ© vision\LegoSuiveurDeLigne\Cyril_Antoine_Hamda_VA55_TP1\src\sensors\distance_sensor.py:4:1: E302 expected 2 blank lines, found 1

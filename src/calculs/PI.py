@@ -1,3 +1,10 @@
+"""
+Module implémentant un contrôleur PI (Proportionnel Intégral).
+Le contrôleur PI combine deux actions :
+- P : correction proportionnelle à l'erreur
+- I : correction proportionnelle à l'intégrale de l'erreur
+"""
+
 class PIController:
     """
     Contrôleur proportionnel-intégral.
@@ -11,6 +18,15 @@ class PIController:
         self.max_history = max_history
 
     def compute(self, value):
+        """
+        Calcule la correction PI.
+
+        Args:
+            value (float): La valeur mesurée
+
+        Returns:
+            float: La correction combinée P+I à appliquer
+        """
         error = self.setpoint - value
         self.errors.append(error)
         if len(self.errors) > self.max_history:

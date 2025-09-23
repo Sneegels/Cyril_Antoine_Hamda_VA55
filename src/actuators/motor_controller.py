@@ -1,4 +1,10 @@
 #!/usr/bin/env pybricks-micropython
+"""
+Module for controlling EV3 robot motors. Provides a high-level interface for driving, 
+rotating, and managing the state of the two motors that control the robot's movement.
+This module requires the pybricks library and is designed to run on EV3 hardware.
+"""
+
 from pybricks.ev3devices import Motor
 from pybricks.parameters import Port, Stop
 
@@ -39,8 +45,12 @@ class MotorController:
         """
         Arrête les deux moteurs selon le mode choisi.
         """
-        self.left_motor.stop(stop_type)
-        self.right_motor.stop(stop_type)
+        if stop_type == Stop.BRAKE:
+            self.left_motor.brake()
+            self.right_motor.brake()
+        elif stop_type == Stop.COAST:
+            self.left_motor.stop()
+            self.right_motor.stop()
 
     def reset(self):
         """
