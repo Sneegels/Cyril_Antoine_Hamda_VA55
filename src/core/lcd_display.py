@@ -15,6 +15,6 @@ class LCDDisplay:
         self.ev3.screen.clear()
         lines = []
         for key, value in status_dict.items():
-            lines.append(f"{key}: {value}")
+            lines.append(str(key) + ": " + str(value))
         for i, line in enumerate(lines):
             self.ev3.screen.draw_text(10, 20 + i*20, line)

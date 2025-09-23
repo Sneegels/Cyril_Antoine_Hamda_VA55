@@ -1,3 +1,5 @@
+#!/usr/bin/env pybricks-micropython
+
 from core.robot_status import RobotStatus
 from core.lcd_display import LCDDisplay
 from core.logger import Logger
@@ -43,5 +45,5 @@ def main():
 
     motors.stop()
 
-if __name__ == "main":
+if __name__ == "__main__":
     main()

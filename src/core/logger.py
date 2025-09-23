@@ -7,17 +7,19 @@ class Logger:
     """
 
     def __init__(self, log_dir="logs"):
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
+        try:
+            os.mkdir(log_dir)
+        except:
+            pass  # Le dossier existe déjà
         timestamp = time.strftime("%Y%m%d-%H%M%S")
-        self.filepath = os.path.join(log_dir, f"log_{timestamp}.csv")
+        self.filepath = log_dir + "/log_" + timestamp + ".csv"
 
     def log(self, status: dict):
         """
         Ajoute une ligne dans le fichier CSV avec horodatage.
         """
         with open(self.filepath, "a") as f:
-            line = f"{time.time()}"
+            line = str(time.time())
             for value in status.values():
-                line += f",{value}"
+                line += "," + str(value)
             f.write(line + "\n")
