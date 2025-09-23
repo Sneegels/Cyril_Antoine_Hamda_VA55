@@ -116,7 +116,7 @@ def test_pid_track(motors, color_sensor, logger, sound_light):
     search_counter = 0
     start_time = time.time()
     
-    for i in range(800):  # ~80 secondes pour parcours complet
+    for i in range(100):  # ~10 secondes pour parcours complet
         reflection = color_sensor.get_reflection()
         
         if reflection < 35:  # Sur la ligne noire
@@ -178,7 +178,6 @@ def main():
     # Initialisation des composants
     status = RobotStatus()
     lcd = LCDDisplay()
-    logger = Logger("tp1_logs")  # Dossier spécifique
     color_sensor = ColorSensorWrapper()
     distance_sensor = DistanceSensorWrapper()
     motors = MotorController()
@@ -192,19 +191,31 @@ def main():
     time.sleep(3)
     
     # Test 1: Bang-Bang (log des erreurs)
-    test_bangbang(motors, color_sensor, logger, sound_light)
+    print("LOG 1: ERREURS BANG-BANG - Fichier: bangbang_errors.csv")
+    logger_bangbang = Logger("logs_bangbang")
+    test_bangbang(motors, color_sensor, logger_bangbang, sound_light)
+    print("Log Bang-Bang terminé. Fichier:", logger_bangbang.filepath)
     time.sleep(2)
     
     # Test 2: PID ligne droite 1m (log erreurs + temps)
-    #test_pid_1m_line(motors, color_sensor, logger, sound_light)
-    #time.sleep(2)
+    print("LOG 2: ERREURS + TEMPS PID 1M - Fichier: pid_1m_performance.csv")
+    logger_pid1m = Logger("logs_pid_1m")
+    test_pid_1m_line(motors, color_sensor, logger_pid1m, sound_light)
+    print("Log PID 1m terminé. Fichier:", logger_pid1m.filepath)
+    time.sleep(2)
     
     # Test 3: PID tapis complet (log erreurs + temps)
-    #test_pid_track(motors, color_sensor, logger, sound_light)
+    print("LOG 3: ERREURS + TEMPS TAPIS COMPLET - Fichier: pid_track_complete.csv")
+    logger_track = Logger("logs_pid_track")
+    test_pid_track(motors, color_sensor, logger_track, sound_light)
+    print("Log PID Track terminé. Fichier:", logger_track.filepath)
     
-    # Fin des tests
-    sound_light.play_tone(2000, 1000)
-    print("=== TP1 TERMINE - TOUS LES LOGS SAUVEGARDES ===")
+    # Résumé des logs créés
+    print("=== RESUME DES LOGS CREES ===")
+    print("1. BANG-BANG ERRORS:", logger_bangbang.filepath)
+    print("2. PID 1M PERFORMANCE:", logger_pid1m.filepath) 
+    print("3. PID TRACK COMPLETE:", logger_track.filepath)
+    print("=== TOUS LES TESTS TERMINES ===")
 
 if __name__ == "__main__":
     main()
