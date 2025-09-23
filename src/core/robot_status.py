@@ -1,9 +1,6 @@
 class RobotStatus:
-    """
-    Stocke l'état courant du robot.
-    """
-
     def __init__(self):
+        # Attributs de base
         self.distance = None
         self.color = None
         self.reflection = None
@@ -11,25 +8,24 @@ class RobotStatus:
         self.left_speed = None
         self.right_speed = None
         self.last_error = None
+        
+        # Ajouts pour contrôleurs
+        self.controller_type = None  # "bangbang", "P", "PI", "PID"
+        self.correction = None       # Correction appliquée
+        self.integral_error = None   # Pour PI/PID
+        self.derivative_error = None # Pour PID
+        self.setpoint = None        # Consigne
+        self.iteration = None       # Numéro d'itération
+        self.time = None            # Temps écoulé
 
-    def update(self, distance=None, color=None, reflection=None, speed=None, 
-               left_speed=None, right_speed=None, error=None):
-        if distance is not None:
-            self.distance = distance
-        if color is not None:
-            self.color = color
-        if reflection is not None:
-            self.reflection = reflection
-        if speed is not None:
-            self.speed = speed
-        if left_speed is not None:
-            self.left_speed = left_speed
-        if right_speed is not None:
-            self.right_speed = right_speed
-        if error is not None:
-            self.last_error = error
+    def update(self, **kwargs):
+        # Met à jour les attributs du robot
+        for key, value in kwargs.items():
+            if hasattr(self, key) and value is not None:
+                setattr(self, key, value)
 
     def get_status(self):
+        # Retourne un dictionnaire avec l'état actuel du robot
         return {
             "distance": self.distance,
             "color": self.color,
@@ -37,5 +33,12 @@ class RobotStatus:
             "speed": self.speed,
             "left_speed": self.left_speed,
             "right_speed": self.right_speed,
-            "last_error": self.last_error
+            "last_error": self.last_error,
+            "controller_type": self.controller_type,
+            "correction": self.correction,
+            "integral_error": self.integral_error,
+            "derivative_error": self.derivative_error,
+            "setpoint": self.setpoint,
+            "iteration": self.iteration,
+            "time": self.time
         }

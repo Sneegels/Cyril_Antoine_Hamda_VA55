@@ -2,11 +2,9 @@ import time
 import os
 
 class Logger:
-    """
-    Logger CSV pour l'état du robot.
-    """
 
     def __init__(self, log_dir="logs"):
+        # Crée le dossier de logs s'il n'existe pas
         try:
             os.mkdir(log_dir)
         except:
@@ -16,9 +14,7 @@ class Logger:
         self.first_log = True  # Pour écrire les en-têtes
 
     def log(self, status: dict):
-        """
-        Ajoute une ligne dans le fichier CSV avec horodatage.
-        """
+        # Ajoute une ligne dans le fichier CSV avec horodatage.
         with open(self.filepath, "a") as f:
             if self.first_log:
                 # Écrire les en-têtes CSV
