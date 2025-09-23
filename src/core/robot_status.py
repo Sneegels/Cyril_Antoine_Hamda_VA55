@@ -8,9 +8,12 @@ class RobotStatus:
         self.color = None
         self.reflection = None
         self.speed = None
+        self.left_speed = None
+        self.right_speed = None
         self.last_error = None
 
-    def update(self, distance=None, color=None, reflection=None, speed=None, error=None):
+    def update(self, distance=None, color=None, reflection=None, speed=None, 
+               left_speed=None, right_speed=None, error=None):
         if distance is not None:
             self.distance = distance
         if color is not None:
@@ -19,6 +22,10 @@ class RobotStatus:
             self.reflection = reflection
         if speed is not None:
             self.speed = speed
+        if left_speed is not None:
+            self.left_speed = left_speed
+        if right_speed is not None:
+            self.right_speed = right_speed
         if error is not None:
             self.last_error = error
 
@@ -28,5 +35,7 @@ class RobotStatus:
             "color": self.color,
             "reflection": self.reflection,
             "speed": self.speed,
+            "left_speed": self.left_speed,
+            "right_speed": self.right_speed,
             "last_error": self.last_error
         }

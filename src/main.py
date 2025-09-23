@@ -6,6 +6,7 @@ from core.logger import Logger
 from sensors.color_sensor import ColorSensorWrapper
 from sensors.distance_sensor import DistanceSensorWrapper
 from actuators.motor_controller import MotorController
+from calculs.PID import PIDController  # Import de ta classe PID
 
 def main():
     status = RobotStatus()
@@ -15,33 +16,40 @@ def main():
     distance_sensor = DistanceSensorWrapper()
     motors = MotorController()
 
-    setpoint = 50  # distance cible en cm
-    Kp = 2         # gain proportionnel
-    Ki = 0.1       # gain intégral
-    Kd = 0.5       # gain dérivé
-    integral = 0
-    previous_error = 0
-
+    # Initialiser le contrôleur PID pour suivre la ligne
+    pid_controller = PIDController(
+        kp=3.0,
+        ki=0.1,
+        kd=0.5,
+        setpoint=15  # valeur cible pour rester sur la ligne noire
+    )
+    
+    base_speed = 150       # vitesse de base
+    
     # Exemple de boucle principale
-    for _ in range(10):
+    for _ in range(50):
         color = color_sensor.get_color()
         reflection = color_sensor.get_reflection()
         distance = distance_sensor.get_distance()
-        error = setpoint - distance # P
-        integral += error # PI
-        derivative = error - previous_error # PID
+        
+        # Calcul de la correction avec le PID
+        correction = pid_controller.compute(reflection)
+        
+        # Vitesses des moteurs (gauche et droite)
+        left_speed = base_speed - correction
+        right_speed = base_speed + correction
+        
+        # Limiter les vitesses
+        left_speed = max(50, min(300, int(left_speed)))
+        right_speed = max(50, min(300, int(right_speed)))
+        
+        print("Reflection:", reflection, "Correction:", correction, "Left:", left_speed, "Right:", right_speed)
 
-        speed_p = Kp * error
-        speed_i = Ki * integral
-        speed_d = Kd * derivative
-        speed_pi = speed_p + speed_i
-        speed_pid = speed_p + speed_i + speed_d
-        speed = max(0, min(255, int(speed_p)))  # vitesse entre 0 et 255
-
-        status.update(distance=distance, color=color, reflection=reflection, speed=speed)
+        status.update(distance=distance, color=color, reflection=reflection, left_speed=left_speed, right_speed=right_speed)
         lcd.show_status(status.get_status())
         logger.log(status.get_status())
-        motors.forward(speed)
+        
+        motors.drive(left_speed, right_speed)
 
     motors.stop()
 
