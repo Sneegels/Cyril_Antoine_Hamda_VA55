@@ -1,45 +1,92 @@
 #!/usr/bin/env pybricks-micropython
 
 import time
-from actuators.motor_controller import MotorController
-from sensors.color_sensor import ColorSensorWrapper
-from calculs.bangbang import BangBangController
-from calculs.P import PController
-from calculs.PI import PIController
-from calculs.PID import PIDController
-from core.logger import Logger
-from core.robot_status import RobotStatus
+from src.actuators.motor_controller import MotorController
+from src.sensors.color_sensor import ColorSensorWrapper
+from src.calculs.bangbang import BangBangController
+from src.calculs.P import PController
+from src.calculs.PI import PIController
+from src.calculs.PID import PIDController
+from src.core.logger import Logger
+from src.core.robot_status import RobotStatus
 from pybricks.parameters import Port
+from pybricks.ev3devices import ColorSensor
 
 # =============================================================================
-# CONFIGURATION DU ROBOT
+# CONFIGURATION HARDWARE
 # =============================================================================
-LEFT_MOTOR_PORT = Port.B
-RIGHT_MOTOR_PORT = Port.C
-COLOR_SENSOR_PORT = Port.S3
+LEFT_MOTOR_PORT = Port.A
+RIGHT_MOTOR_PORT = Port.B
+COLOR_SENSOR_PORT = Port.S1
+
+# =============================================================================
+# CONFIGURATION DRIVEBASE
+# =============================================================================
+WHEEL_DIAMETER = 55     # mm - Diamètre des roues
+AXLE_TRACK = 104        # mm - Distance entre roues
+
+# =============================================================================
+# CONFIGURATION CONTRÔLEURS
+# =============================================================================
+# Thresholds et setpoints (basé sur mesures: blanc=68, noir=9)
+OPTIMAL_THRESHOLD = 39  # Seuil optimal calculé: (68+9)/2 ≈ 39
+
+# Bang-Bang Controller
+BANGBANG_THRESHOLD = OPTIMAL_THRESHOLD
+BANGBANG_DELTA = 50
+BANGBANG_SPEED = 200  # mm/s
+
+# Proportional Controller
+P_KP = 2.0
+P_SETPOINT = OPTIMAL_THRESHOLD
+P_SPEED = 300  # mm/s
+
+# Proportional-Integral Controller
+PI_KP = 1.5
+PI_KI = 0.10
+PI_SETPOINT = OPTIMAL_THRESHOLD
+PI_SPEED = 250  # mm/s
+
+# Proportional-Integral-Derivative Controller
+PID_KP = 1.2
+PID_KI = 0.03
+PID_KD = 0.6
+PID_SETPOINT = OPTIMAL_THRESHOLD
+PID_SPEED = 300  # mm/s
+
+# Paramètres généraux
+LOOP_ITERATIONS = 200   # Nombre d'itérations par test
+LOOP_DELAY = 0.1       # Délai entre itérations (secondes)
+
+# =============================================================================
+# FONCTIONS DE TEST DES CONTRÔLEURS
+# =============================================================================
 
 def test_bangbang(motors, color_sensor, logger, status):
-    # Test 1: Bang-Bang simple avec log
-    print("BANG-BANG")
+    """Test du contrôleur Bang-Bang (tout ou rien)"""
+    print("=== DÉBUT TEST BANG-BANG ===")
     
-    controller = BangBangController(threshold=25, delta=40)
-    base_speed = 150  # vitesse_entrainement
+    controller = BangBangController(
+        threshold=BANGBANG_THRESHOLD, 
+        delta=BANGBANG_DELTA
+    )
+    base_speed = BANGBANG_SPEED
+    start_time = time.time()
     
-    for i in range(200):
+    for i in range(LOOP_ITERATIONS):
         reflection = color_sensor.get_reflection()
+        correction = controller.compute(reflection)
         
-        # Calcul de la correction Bang-Bang
-        correction = controller.compute(reflection)  # vitesse_rotation
+        # Commande du robot avec DriveBase
+        motors.drive_base.drive(base_speed, correction)
         
-        # Utilisation de drive()
-        motors.drive(base_speed, correction)
-        
-        # Pour l'affichage, on peut calculer les vitesses individuelles
+        # Calcul des vitesses individuelles pour affichage
         left_speed = base_speed - correction
         right_speed = base_speed + correction
         
+        # Mise à jour du statut
         status.update(
-            controller_type="bangbang",
+            controller_type="BangBang",
             iteration=i,
             time=time.time() - start_time,
             reflection=reflection,
@@ -50,39 +97,40 @@ def test_bangbang(motors, color_sensor, logger, status):
             right_speed=right_speed
         )
         
-        # Log des données
+        # Logging
         logger.log(status.get_status())
         
-        print("BB | Iter: " + str(i) + " | Refl: " + str(reflection) + " | Corr: " + str(correction))
-        time.sleep(0.1)
+        # Affichage console
+        print(f"BB | Iter: {i:3d} | Refl: {reflection:2d} | Corr: {correction:+4.0f}")
+        time.sleep(LOOP_DELAY)
     
-    motors.stop()
-    print("BANG-BANG FIN")
+    motors.drive_base.stop()
+    print("=== FIN TEST BANG-BANG ===\n")
+
 
 def test_proportional(motors, color_sensor, logger, status):
-    # Test 2: Contrôleur Proportionnel (P)
-    print("PROPORTIONNEL")
+    """Test du contrôleur Proportionnel (P)"""
+    print("=== DÉBUT TEST PROPORTIONNEL ===")
     
-    # Calcul kp basé sur Bang-Bang : kp = delta / erreur_max
-    # Si delta=40 et erreur_max≈20, alors kp=2.0
-    controller = PController(kp=2.0, setpoint=45)  # 45 = gris optimal
-    base_speed = 150  # Même vitesse que Bang-Bang
+    controller = PController(kp=P_KP, setpoint=P_SETPOINT)
+    base_speed = P_SPEED
+    start_time = time.time()
     
-    for i in range(200):  # 20 secondes
+    for i in range(LOOP_ITERATIONS):
         reflection = color_sensor.get_reflection()
-        
-        # δ(n) = kp * e(n)
         correction = controller.compute(reflection)
         
-        motors.drive(base_speed, correction)
-
-        # Mise à jour du status
+        # Commande du robot
+        motors.drive_base.drive(base_speed, correction)
+        
+        # Calculs pour affichage et logging
         error = controller.setpoint - reflection
         left_speed = base_speed - correction
         right_speed = base_speed + correction
         
+        # Mise à jour du statut
         status.update(
-            controller_type="P",
+            controller_type="Proportional",
             iteration=i,
             time=time.time() - start_time,
             reflection=reflection,
@@ -94,30 +142,33 @@ def test_proportional(motors, color_sensor, logger, status):
             right_speed=right_speed
         )
         
+        # Logging
         logger.log(status.get_status())
         
-        print("P | Iter: " + str(i) + " | Refl: " + str(reflection) + " | Err: " + str(error) + " | Corr: " + str(correction))
-        time.sleep(0.1)
+        # Affichage console
+        print(f"P | Iter: {i:3d} | Refl: {reflection:2d} | Err: {error:+3.0f} | Corr: {correction:+4.0f}")
+        time.sleep(LOOP_DELAY)
     
-    motors.stop()
-    print("PROPORTIONNEL FIN")
+    motors.drive_base.stop()
+    print("=== FIN TEST PROPORTIONNEL ===\n")
+
 
 def test_pi_controller(motors, color_sensor, logger, status):
-    # Test 3: Contrôleur Proportionnel-Intégral (PI)
-    print("PORTIONNEL-INTÉGRAL")
+    """Test du contrôleur Proportionnel-Intégral (PI)"""
+    print("=== DÉBUT TEST PROPORTIONNEL-INTÉGRAL ===")
     
-    controller = PIController(kp=2.0, ki=0.05, setpoint=45)
-    base_speed = 150
+    controller = PIController(kp=PI_KP, ki=PI_KI, setpoint=PI_SETPOINT)
+    base_speed = PI_SPEED
+    start_time = time.time()
     
-    for i in range(200):  # 20 secondes
+    for i in range(LOOP_ITERATIONS):
         reflection = color_sensor.get_reflection()
-        
-        # δ(n) = kp*e(n) + ki*∑e(n)
         correction = controller.compute(reflection)
         
-        motors.drive(base_speed, correction)
+        # Commande du robot
+        motors.drive_base.drive(base_speed, correction)
         
-        # Affichage détaillé
+        # Calculs pour affichage détaillé
         error = controller.setpoint - reflection
         integral = sum(controller.errors)
         proportional_part = controller.kp * error
@@ -125,6 +176,7 @@ def test_pi_controller(motors, color_sensor, logger, status):
         left_speed = base_speed - correction
         right_speed = base_speed + correction
         
+        # Mise à jour du statut
         status.update(
             controller_type="PI",
             iteration=i,
@@ -139,30 +191,38 @@ def test_pi_controller(motors, color_sensor, logger, status):
             right_speed=right_speed
         )
         
+        # Logging
         logger.log(status.get_status())
         
-        print("PI | Iter: " + str(i) + " | Refl: " + str(reflection) + " | P: " + str(int(proportional_part)) + " | I: " + str(int(integral_part)) + " | Corr: " + str(int(correction)))
-        time.sleep(0.1)
+        # Affichage console détaillé
+        print(f"PI | Iter: {i:3d} | Refl: {reflection:2d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | Corr: {correction:+4.0f}")
+        time.sleep(LOOP_DELAY)
     
-    motors.stop()
-    print("PORTIONNEL-INTÉGRAL FIN")
+    motors.drive_base.stop()
+    print("=== FIN TEST PROPORTIONNEL-INTÉGRAL ===\n")
+
 
 def test_pid_controller(motors, color_sensor, logger, status):
-    # Test 4: Contrôleur Proportionnel-Intégral-Dérivé (PID)
-    print("PROPORTIONNEL-INTÉGRAL-DÉRIVÉ")
+    """Test du contrôleur Proportionnel-Intégral-Dérivé (PID)"""
+    print("=== DÉBUT TEST PROPORTIONNEL-INTÉGRAL-DÉRIVÉ ===")
     
-    controller = PIDController(kp=2.0, ki=0.05, kd=0.5, setpoint=45)
-    base_speed = 150
+    controller = PIDController(
+        kp=PID_KP, 
+        ki=PID_KI, 
+        kd=PID_KD, 
+        setpoint=PID_SETPOINT
+    )
+    base_speed = PID_SPEED
+    start_time = time.time()
     
-    for i in range(200):  # 20 secondes
+    for i in range(LOOP_ITERATIONS):
         reflection = color_sensor.get_reflection()
-        
-        # δ(n) = kp*e(n) + ki*∑e(n) + kd*[e(n)-e(n-1)]
         correction = controller.compute(reflection)
         
-        motors.drive(base_speed, correction)
+        # Commande du robot
+        motors.drive_base.drive(base_speed, correction)
         
-        # Affichage détaillé des 3 composantes
+        # Calculs pour affichage des 3 composantes PID
         error = controller.setpoint - reflection
         integral = sum(controller.errors)
         derivative = error - controller.last_error if i > 0 else 0
@@ -172,6 +232,7 @@ def test_pid_controller(motors, color_sensor, logger, status):
         left_speed = base_speed - correction
         right_speed = base_speed + correction
         
+        # Mise à jour du statut
         status.update(
             controller_type="PID",
             iteration=i,
@@ -187,42 +248,158 @@ def test_pid_controller(motors, color_sensor, logger, status):
             right_speed=right_speed
         )
         
+        # Logging
         logger.log(status.get_status())
         
-        print("PID | Iter: " + str(i) + " | P: " + str(int(proportional_part)) + " | I: " + str(int(integral_part)) + " | D: " + str(int(derivative_part)) + " | Corr: " + str(int(correction)))
-        time.sleep(0.1)
+        # Affichage console avec les 3 composantes
+        print(f"PID | Iter: {i:3d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | D: {derivative_part:+4.0f} | Corr: {correction:+4.0f}")
+        time.sleep(LOOP_DELAY)
     
-    motors.stop()
-    print("PROPORTIONNEL-INTÉGRAL-DÉRIVÉ FIN")
+    motors.drive_base.stop()
+    print("=== FIN TEST PROPORTIONNEL-INTÉGRAL-DÉRIVÉ ===\n")
+
+# =============================================================================
+# FONCTIONS UTILITAIRES ET TESTS
+# =============================================================================
+ 
+def find_color_sensor():
+    """Trouve automatiquement le port du capteur de couleur"""
+    print("=== RECHERCHE DU CAPTEUR DE COULEUR ===")
+    ports = [Port.S1, Port.S2, Port.S3, Port.S4]
+    
+    for port in ports:
+        try:
+            sensor = ColorSensor(port)
+            reflection = sensor.reflection()
+            print(f"✅ CAPTEUR TROUVÉ sur {port} - Réflexion: {reflection}")
+            return port
+        except Exception as e:
+            print(f"❌ Pas de capteur sur {port}")
+    
+    print("⚠️ AUCUN CAPTEUR TROUVÉ !")
+    return None
+
+
+def test_motor_balance():
+    """Test individuel des moteurs pour vérifier l'équilibrage"""
+    print("=== TEST D'ÉQUILIBRAGE DES MOTEURS ===")
+    motors = MotorController(LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT, WHEEL_DIAMETER, AXLE_TRACK)
+    
+    # Test moteur gauche
+    print("🔄 Test moteur GAUCHE à 300 deg/s pendant 2s...")
+    motors.left_motor.run(300)
+    time.sleep(2)
+    motors.drive_base.stop()
+    time.sleep(1)
+    
+    # Test moteur droit
+    print("🔄 Test moteur DROIT à 300 deg/s pendant 2s...")
+    motors.right_motor.run(300)
+    time.sleep(2)
+    motors.drive_base.stop()
+    
+    print("✅ Test d'équilibrage terminé\n")
+
+
+def calibrate_color_sensor():
+    """Calibration du capteur de couleur sur blanc et noir"""
+    print("=== CALIBRATION DU CAPTEUR DE COULEUR ===")
+    color_sensor = ColorSensorWrapper(COLOR_SENSOR_PORT)
+    
+    print("📍 Placez le robot sur la LIGNE NOIRE et appuyez sur le bouton central...")
+    # TODO: Ajouter attente bouton
+    time.sleep(3)  # Temporaire
+    black_reflection = color_sensor.get_reflection()
+    print(f"⚫ Réflexion NOIR: {black_reflection}")
+    
+    print("📍 Placez le robot sur le BLANC et appuyez sur le bouton central...")
+    # TODO: Ajouter attente bouton  
+    time.sleep(3)  # Temporaire
+    white_reflection = color_sensor.get_reflection()
+    print(f"⚪ Réflexion BLANC: {white_reflection}")
+    
+    optimal_threshold = (black_reflection + white_reflection) / 2
+    print(f"🎯 Seuil optimal calculé: {optimal_threshold:.1f}")
+    print(f"🔧 Ajustez OPTIMAL_THRESHOLD = {optimal_threshold:.0f} dans la configuration\n")
+    
+    return black_reflection, white_reflection, optimal_threshold
+
+
+def print_configuration():
+    """Affiche la configuration actuelle"""
+    print("=== CONFIGURATION ACTUELLE ===")
+    print(f"Hardware:")
+    print(f"  - Moteur gauche: {LEFT_MOTOR_PORT}")
+    print(f"  - Moteur droit: {RIGHT_MOTOR_PORT}")
+    print(f"  - Capteur couleur: {COLOR_SENSOR_PORT}")
+    print(f"DriveBase:")
+    print(f"  - Diamètre roues: {WHEEL_DIAMETER} mm")
+    print(f"  - Écartement: {AXLE_TRACK} mm")
+    print(f"Contrôleurs:")
+    print(f"  - Seuil optimal: {OPTIMAL_THRESHOLD}")
+    print(f"  - Bang-Bang: Δ={BANGBANG_DELTA}, V={BANGBANG_SPEED} mm/s")
+    print(f"  - Proportionnel: Kp={P_KP}, V={P_SPEED} mm/s")
+    print(f"  - PI: Kp={PI_KP}, Ki={PI_KI}, V={PI_SPEED} mm/s")
+    print(f"  - PID: Kp={PID_KP}, Ki={PID_KI}, Kd={PID_KD}, V={PID_SPEED} mm/s")
+    print()
+
+# =============================================================================
+# FONCTION PRINCIPALE
+# =============================================================================
 
 def main():
+    """Fonction principale - Exécute les tests des contrôleurs"""
+    print("🚀 DÉMARRAGE DU PROGRAMME DE SUIVI DE LIGNE")
+    print("=" * 50)
+    
+    # Affichage de la configuration
+    print_configuration()
+    
     # Initialisation des composants
-    motors = MotorController(LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT)
+    print("🔧 Initialisation des composants...")
+    motors = MotorController(LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT, WHEEL_DIAMETER, AXLE_TRACK)
     color_sensor = ColorSensorWrapper(COLOR_SENSOR_PORT)
     robot_status = RobotStatus()
-
+    
+    # Initialisation des loggers
+    print("📝 Initialisation des loggers...")
     logger_bb = Logger("logs_bangbang")
-    logger_p = Logger("logs_proportional") 
+    logger_p = Logger("logs_proportional")
     logger_pi = Logger("logs_pi")
     logger_pid = Logger("logs_pid")
     
+    print("✅ Initialisation terminée\n")
+    
+    # Exécution des tests (décommenter selon besoin)
+    
     # Test Bang-Bang
-    test_bangbang(motors, color_sensor, logger_bb, robot_status)
-
+    # test_bangbang(motors, color_sensor, logger_bb, robot_status)
+    
     # Test Proportionnel
-    test_proportional(motors, color_sensor, logger_p, robot_status)
-
+    # test_proportional(motors, color_sensor, logger_p, robot_status)
+    
     # Test Proportionnel-Intégral
     test_pi_controller(motors, color_sensor, logger_pi, robot_status)
-
+    
     # Test Proportionnel-Intégral-Dérivé
-    test_pid_controller(motors, color_sensor, logger_pid, robot_status)
+    # test_pid_controller(motors, color_sensor, logger_pid, robot_status)
+    
+    # Affichage des fichiers de logs générés
+    print("📋 FICHIERS DE LOGS GÉNÉRÉS :")
+    # print(f"  - Bang-Bang: {logger_bb.filepath}")
+    # print(f"  - Proportionnel: {logger_p.filepath}")
+    print(f"  - PI: {logger_pi.filepath}")
+    # print(f"  - PID: {logger_pid.filepath}")
+    
+    print("\n🏁 PROGRAMME TERMINÉ")
 
-    print("\nFICHIERS DE LOGS GÉNÉRÉS :")
-    print("Bang-Bang:", logger_bb.filepath)
-    print("Proportional:", logger_p.filepath)
-    print("PI:", logger_pi.filepath)
-    print("PID:", logger_pid.filepath)
+# =============================================================================
+# POINT D'ENTRÉE
+# =============================================================================
 
 if __name__ == "__main__":
+    # Tests et calibration (décommenter selon besoin)
+    # find_color_sensor()
+    # test_motor_balance()
+    # calibrate_color_sensor()
     main()

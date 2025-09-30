@@ -6,7 +6,6 @@ class BangBangController:
         self.delta = delta          # amplitude de correction
 
     def compute(self, value):
-        # Calcule la correction Bang-Bang.
         if value < self.threshold:  # Sur noir
-            return -self.delta      # Tourne à gauche
-        return self.delta           # Sur blanc, tourne à droite
+            return self.delta       # Tourne à DROITE (+)
+        return -self.delta          # Sur blanc, tourne à GAUCHE (-)
