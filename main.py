@@ -15,9 +15,9 @@ from pybricks.ev3devices import ColorSensor
 # =============================================================================
 # CONFIGURATION HARDWARE
 # =============================================================================
-LEFT_MOTOR_PORT = Port.A
-RIGHT_MOTOR_PORT = Port.B
-COLOR_SENSOR_PORT = Port.S1
+LEFT_MOTOR_PORT = Port.B
+RIGHT_MOTOR_PORT = Port.C
+COLOR_SENSOR_PORT = Port.S3
 
 # =============================================================================
 # CONFIGURATION DRIVEBASE
@@ -52,7 +52,7 @@ PID_KP = 1.2
 PID_KI = 0.03
 PID_KD = 0.6
 PID_SETPOINT = OPTIMAL_THRESHOLD
-PID_SPEED = 300  # mm/s
+PID_SPEED = 200  # mm/s
 
 # Paramètres généraux
 LOOP_ITERATIONS = 200   # Nombre d'itérations par test
@@ -101,7 +101,7 @@ def test_bangbang(motors, color_sensor, logger, status):
         logger.log(status.get_status())
         
         # Affichage console
-        print(f"BB | Iter: {i:3d} | Refl: {reflection:2d} | Corr: {correction:+4.0f}")
+        #print(f"BB | Iter: {i:3d} | Refl: {reflection:2d} | Corr: {correction:+4.0f}")
         time.sleep(LOOP_DELAY)
     
     motors.drive_base.stop()
@@ -146,7 +146,7 @@ def test_proportional(motors, color_sensor, logger, status):
         logger.log(status.get_status())
         
         # Affichage console
-        print(f"P | Iter: {i:3d} | Refl: {reflection:2d} | Err: {error:+3.0f} | Corr: {correction:+4.0f}")
+        #print(f"P | Iter: {i:3d} | Refl: {reflection:2d} | Err: {error:+3.0f} | Corr: {correction:+4.0f}")
         time.sleep(LOOP_DELAY)
     
     motors.drive_base.stop()
@@ -195,7 +195,7 @@ def test_pi_controller(motors, color_sensor, logger, status):
         logger.log(status.get_status())
         
         # Affichage console détaillé
-        print(f"PI | Iter: {i:3d} | Refl: {reflection:2d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | Corr: {correction:+4.0f}")
+        #print(f"PI | Iter: {i:3d} | Refl: {reflection:2d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | Corr: {correction:+4.0f}")
         time.sleep(LOOP_DELAY)
     
     motors.drive_base.stop()
@@ -252,7 +252,7 @@ def test_pid_controller(motors, color_sensor, logger, status):
         logger.log(status.get_status())
         
         # Affichage console avec les 3 composantes
-        print(f"PID | Iter: {i:3d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | D: {derivative_part:+4.0f} | Corr: {correction:+4.0f}")
+        #print(f"PID | Iter: {i:3d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | D: {derivative_part:+4.0f} | Corr: {correction:+4.0f}")
         time.sleep(LOOP_DELAY)
     
     motors.drive_base.stop()
@@ -271,10 +271,10 @@ def find_color_sensor():
         try:
             sensor = ColorSensor(port)
             reflection = sensor.reflection()
-            print(f"✅ CAPTEUR TROUVÉ sur {port} - Réflexion: {reflection}")
+            #print(f"✅ CAPTEUR TROUVÉ sur {port} - Réflexion: {reflection}")
             return port
         except Exception as e:
-            print(f"❌ Pas de capteur sur {port}")
+            print("❌ Pas de capteur")
     
     print("⚠️ AUCUN CAPTEUR TROUVÉ !")
     return None
@@ -310,17 +310,17 @@ def calibrate_color_sensor():
     # TODO: Ajouter attente bouton
     time.sleep(3)  # Temporaire
     black_reflection = color_sensor.get_reflection()
-    print(f"⚫ Réflexion NOIR: {black_reflection}")
+    #print(f"⚫ Réflexion NOIR: {black_reflection}")
     
     print("📍 Placez le robot sur le BLANC et appuyez sur le bouton central...")
     # TODO: Ajouter attente bouton  
     time.sleep(3)  # Temporaire
     white_reflection = color_sensor.get_reflection()
-    print(f"⚪ Réflexion BLANC: {white_reflection}")
+    #print(f"⚪ Réflexion BLANC: {white_reflection}")
     
     optimal_threshold = (black_reflection + white_reflection) / 2
-    print(f"🎯 Seuil optimal calculé: {optimal_threshold:.1f}")
-    print(f"🔧 Ajustez OPTIMAL_THRESHOLD = {optimal_threshold:.0f} dans la configuration\n")
+    #print(f"🎯 Seuil optimal calculé: {optimal_threshold:.1f}")
+    #print(f"🔧 Ajustez OPTIMAL_THRESHOLD = {optimal_threshold:.0f} dans la configuration\n")
     
     return black_reflection, white_reflection, optimal_threshold
 
@@ -328,19 +328,19 @@ def calibrate_color_sensor():
 def print_configuration():
     """Affiche la configuration actuelle"""
     print("=== CONFIGURATION ACTUELLE ===")
-    print(f"Hardware:")
-    print(f"  - Moteur gauche: {LEFT_MOTOR_PORT}")
-    print(f"  - Moteur droit: {RIGHT_MOTOR_PORT}")
-    print(f"  - Capteur couleur: {COLOR_SENSOR_PORT}")
-    print(f"DriveBase:")
-    print(f"  - Diamètre roues: {WHEEL_DIAMETER} mm")
-    print(f"  - Écartement: {AXLE_TRACK} mm")
-    print(f"Contrôleurs:")
-    print(f"  - Seuil optimal: {OPTIMAL_THRESHOLD}")
-    print(f"  - Bang-Bang: Δ={BANGBANG_DELTA}, V={BANGBANG_SPEED} mm/s")
-    print(f"  - Proportionnel: Kp={P_KP}, V={P_SPEED} mm/s")
-    print(f"  - PI: Kp={PI_KP}, Ki={PI_KI}, V={PI_SPEED} mm/s")
-    print(f"  - PID: Kp={PID_KP}, Ki={PID_KI}, Kd={PID_KD}, V={PID_SPEED} mm/s")
+    # print(f"Hardware:")
+    # print(f"  - Moteur gauche: {LEFT_MOTOR_PORT}")
+    # print(f"  - Moteur droit: {RIGHT_MOTOR_PORT}")
+    # print(f"  - Capteur couleur: {COLOR_SENSOR_PORT}")
+    # print(f"DriveBase:")
+    # print(f"  - Diamètre roues: {WHEEL_DIAMETER} mm")
+    # print(f"  - Écartement: {AXLE_TRACK} mm")
+    # print(f"Contrôleurs:")
+    # print(f"  - Seuil optimal: {OPTIMAL_THRESHOLD}")
+    # print(f"  - Bang-Bang: Δ={BANGBANG_DELTA}, V={BANGBANG_SPEED} mm/s")
+    # print(f"  - Proportionnel: Kp={P_KP}, V={P_SPEED} mm/s")
+    # print(f"  - PI: Kp={PI_KP}, Ki={PI_KI}, V={PI_SPEED} mm/s")
+    # print(f"  - PID: Kp={PID_KP}, Ki={PID_KI}, Kd={PID_KD}, V={PID_SPEED} mm/s")
     print()
 
 # =============================================================================
@@ -379,16 +379,16 @@ def main():
     # test_proportional(motors, color_sensor, logger_p, robot_status)
     
     # Test Proportionnel-Intégral
-    test_pi_controller(motors, color_sensor, logger_pi, robot_status)
+    # test_pi_controller(motors, color_sensor, logger_pi, robot_status)
     
     # Test Proportionnel-Intégral-Dérivé
-    # test_pid_controller(motors, color_sensor, logger_pid, robot_status)
+    test_pid_controller(motors, color_sensor, logger_pid, robot_status)
     
     # Affichage des fichiers de logs générés
     print("📋 FICHIERS DE LOGS GÉNÉRÉS :")
     # print(f"  - Bang-Bang: {logger_bb.filepath}")
     # print(f"  - Proportionnel: {logger_p.filepath}")
-    print(f"  - PI: {logger_pi.filepath}")
+    #print(f"  - PI: {logger_pi.filepath}")
     # print(f"  - PID: {logger_pid.filepath}")
     
     print("\n🏁 PROGRAMME TERMINÉ")
