@@ -1,6 +1,7 @@
 #!/usr/bin/env pybricks-micropython
 
 import time
+import math
 from src.actuators.motor_controller import MotorController
 from src.sensors.color_sensor import ColorSensorWrapper
 from src.calculs.bangbang import BangBangController
@@ -215,6 +216,9 @@ def test_pid_controller(motors, color_sensor, logger, status):
     base_speed = PID_SPEED
     start_time = time.time()
     
+    x = 0
+    y = 0
+    
     for i in range(LOOP_ITERATIONS):
         reflection = color_sensor.get_reflection()
         correction = controller.compute(reflection)
@@ -250,6 +254,11 @@ def test_pid_controller(motors, color_sensor, logger, status):
         
         # Logging
         logger.log(status.get_status())
+        
+        x += math.cos(motors.drive_base.angle()) * motors.drive_base.speed()
+        y += math.sin(motors.drive_base.angle()) * motors.drive_base.speed()
+        motors.drive_base.reset(distance=0, angle=0)
+        print("X : " + str(x) + " Y :" + str(y))
         
         # Affichage console avec les 3 composantes
         #print(f"PID | Iter: {i:3d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | D: {derivative_part:+4.0f} | Corr: {correction:+4.0f}")
