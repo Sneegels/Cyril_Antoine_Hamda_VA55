@@ -35,18 +35,18 @@ OPTIMAL_THRESHOLD = 39  # Seuil optimal calculé: (68+9)/2 ≈ 39
 # Bang-Bang Controller
 BANGBANG_THRESHOLD = OPTIMAL_THRESHOLD
 BANGBANG_DELTA = 50
-BANGBANG_SPEED = 200  # mm/s
+BANGBANG_SPEED = 100  # mm/s
 
 # Proportional Controller
 P_KP = 2.0
 P_SETPOINT = OPTIMAL_THRESHOLD
-P_SPEED = 300  # mm/s
+P_SPEED = 150  # mm/s
 
 # Proportional-Integral Controller
 PI_KP = 1.5
 PI_KI = 0.10
 PI_SETPOINT = OPTIMAL_THRESHOLD
-PI_SPEED = 250  # mm/s
+PI_SPEED = 125  # mm/s
 
 # Proportional-Integral-Derivative Controller
 PID_KP = 1.2
