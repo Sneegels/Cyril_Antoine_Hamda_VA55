@@ -57,7 +57,7 @@ PID_SETPOINT = OPTIMAL_THRESHOLD
 PID_SPEED = 150  # mm/s
 
 # Paramètres généraux
-LOOP_ITERATIONS = 200   # Nombre d'itérations par test
+LOOP_ITERATIONS = 400   # Nombre d'itérations par test
 LOOP_DELAY = 0.1       # Délai entre itérations (secondes)
 
 # =============================================================================
@@ -217,6 +217,7 @@ def test_pid_controller(motors, color_sensor, logger, status):
     base_speed = PID_SPEED
     start_time = time.time()
     
+    theta = 0
     x = 0
     y = 0
     
@@ -258,9 +259,10 @@ def test_pid_controller(motors, color_sensor, logger, status):
         
         distance = motors.drive_base.distance()  # distance totale depuis le départ
         angle = motors.drive_base.angle() 
-
-        x = math.cos(math.radians(angle)) * distance
-        y = math.sin(math.radians(angle)) * distance
+        theta += math.radians(angle)
+        x += math.cos(theta) * distance
+        y += math.sin(theta) * distance
+        motors.drive_base.reset()
         print(str(x) + ", " + str(y))
         
         # Affichage console avec les 3 composantes
