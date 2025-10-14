@@ -255,10 +255,10 @@ def test_pid_controller(motors, color_sensor, logger, status):
         # Logging
         logger.log(status.get_status())
         
-        x += math.cos(motors.drive_base.angle()) * motors.drive_base.speed()
-        y += math.sin(motors.drive_base.angle()) * motors.drive_base.speed()
-        motors.drive_base.reset(distance=0, angle=0)
-        print("X : " + str(x) + " Y :" + str(y))
+        x += math.cos(math.radians(motors.drive_base.angle())) * motors.drive_base.distance()
+        y += math.sin(math.radians(motors.drive_base.angle())) * motors.drive_base.distance()
+        motors.drive_base.reset()
+        print(str(x) + ", " + str(y))
         
         # Affichage console avec les 3 composantes
         #print(f"PID | Iter: {i:3d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | D: {derivative_part:+4.0f} | Corr: {correction:+4.0f}")
