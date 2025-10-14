@@ -4,6 +4,7 @@ import time
 import math
 from src.actuators.motor_controller import MotorController
 from src.sensors.color_sensor import ColorSensorWrapper
+from src.sensors.gyro_sensor import GyroSensorWrapper
 from src.calculs.bangbang import BangBangController
 from src.calculs.P import PController
 from src.calculs.PI import PIController
@@ -25,7 +26,7 @@ GYRO_SENSOR_PORT = Port.S4
 # CONFIGURATION DRIVEBASE
 # =============================================================================
 WHEEL_DIAMETER = 55     # mm - Diamètre des roues
-AXLE_TRACK = 104        # mm - Distance entre roues
+AXLE_TRACK = 119        # mm - Distance entre roues
 
 # =============================================================================
 # CONFIGURATION CONTRÔLEURS
@@ -229,6 +230,7 @@ def test_pid_controller(motors, color_sensor, logger, status):
         # Commande du robot
         motors.drive_base.drive(base_speed, correction)
         
+        
         # Calculs pour affichage des 3 composantes PID
         error = controller.setpoint - reflection
         integral = sum(controller.errors)
@@ -258,8 +260,10 @@ def test_pid_controller(motors, color_sensor, logger, status):
         # Logging
         logger.log(status.get_status())
         
-        distance = motors.drive_base.distance()  # distance totale depuis le départ
-        angle = motors.drive_base.angle() 
+        
+        
+        distance = motors.drive_base.distance()
+        angle = motors.drive_base.angle()
         theta += math.radians(angle)
         x += math.cos(theta) * distance
         y += math.sin(theta) * distance
@@ -374,6 +378,7 @@ def main():
     print("🔧 Initialisation des composants...")
     motors = MotorController(LEFT_MOTOR_PORT, RIGHT_MOTOR_PORT, WHEEL_DIAMETER, AXLE_TRACK)
     color_sensor = ColorSensorWrapper(COLOR_SENSOR_PORT)
+    gyro_sensor = GyroSensorWrapper(GYRO_SENSOR_PORT)
     robot_status = RobotStatus()
     
     # Initialisation des loggers
