@@ -51,7 +51,7 @@ PI_SETPOINT = OPTIMAL_THRESHOLD
 PI_SPEED = 125  # mm/s
 
 # Proportional-Integral-Derivative Controller
-PID_KP = 1.0
+PID_KP = 0.6
 PID_KI = 0.04
 PID_KD = 1.2
 PID_SETPOINT = OPTIMAL_THRESHOLD
