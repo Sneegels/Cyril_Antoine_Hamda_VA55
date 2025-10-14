@@ -256,9 +256,11 @@ def test_pid_controller(motors, color_sensor, logger, status):
         # Logging
         logger.log(status.get_status())
         
-        x += math.cos(math.radians(motors.drive_base.angle())) * motors.drive_base.distance()
-        y += math.sin(math.radians(motors.drive_base.angle())) * motors.drive_base.distance()
-        motors.drive_base.reset()
+        distance = motors.drive_base.distance()  # distance totale depuis le départ
+        angle = motors.drive_base.angle() 
+
+        x = math.cos(math.radians(angle)) * distance
+        y = math.sin(math.radians(angle)) * distance
         print(str(x) + ", " + str(y))
         
         # Affichage console avec les 3 composantes
