@@ -19,6 +19,7 @@ from pybricks.ev3devices import ColorSensor
 LEFT_MOTOR_PORT = Port.B
 RIGHT_MOTOR_PORT = Port.C
 COLOR_SENSOR_PORT = Port.S3
+GYRO_SENSOR_PORT = Port.S4
 
 # =============================================================================
 # CONFIGURATION DRIVEBASE
