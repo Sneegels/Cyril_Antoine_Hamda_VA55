@@ -3,6 +3,7 @@ from src.calculs.kalman_filter import KalmanFilter
 import time
 import math
 from src.config import PID_KP, PID_KI, PID_KD, PID_SETPOINT, PID_SPEED, LOOP_ITERATIONS, LOOP_DELAY
+from src.cartographie.trajectory_logger import TrajectoryLogger
 
 def test_pid_controller(motors, color_sensor, gyro_sensor, logger, status):
     """Test du contrôleur Proportionnel-Intégral-Dérivé (PID)"""
@@ -11,10 +12,16 @@ def test_pid_controller(motors, color_sensor, gyro_sensor, logger, status):
     controller = PIDController(kp=PID_KP, ki=PID_KI, kd=PID_KD, setpoint=PID_SETPOINT)
     base_speed = PID_SPEED
     start_time = time.time()
+    trajectory = TrajectoryLogger()
 
-    theta = 0
-    x = 0
-    y = 0
+    trajectory_brute = TrajectoryLogger()
+    trajectory_kalman = TrajectoryLogger()
+    x_brute, y_brute, theta_brute = 0, 0, 0
+    x_kalman, y_kalman, theta_kalman = 0, 0, 0
+
+    #kalman_filter_pid = KalmanFilter(1.0, 1.0, 0.01)
+    kalman_filter_gyro = KalmanFilter(1.0, 1.0, 0.01)
+    kalman_filter_drivebase = KalmanFilter(1.0, 1.0, 0.01)
 
     for i in range(LOOP_ITERATIONS):
         reflection = color_sensor.get_reflection()
@@ -54,29 +61,46 @@ def test_pid_controller(motors, color_sensor, gyro_sensor, logger, status):
 
         distance = motors.drive_base.distance()
 
-        angle_pid = correction * LOOP_DELAY
-        theta_pid = math.radians(angle_pid)
-        kalman_filter_pid = KalmanFilter(1.0, 1.0, 0.01)
-        kalman_theta_pid = kalman_filter_pid.update(math.radians(angle_pid))
+        #angle_pid = correction * LOOP_DELAY
+        #theta_pid = math.radians(angle_pid)
+        #kalman_theta_pid = kalman_filter_pid.update(theta_pid)
 
         angle_gyro = gyro_sensor.get_angle()
         theta_gyro = math.radians(angle_gyro)
-        kalman_filter_gyro = KalmanFilter(1.0, 1.0, 0.01)
-        kalman_theta_gyro = kalman_filter_gyro.update(math.radians(angle_gyro))
+        filtered_theta_gyro = kalman_filter_gyro.update(theta_gyro)
 
         angle = motors.drive_base.angle()
         theta += math.radians(angle)
-        kalman_filter = KalmanFilter(1.0, 1.0, 0.01)
-        kalman_theta = kalman_filter.update(math.radians(angle))
+        filtered_theta_drivebase = kalman_filter_drivebase.update(theta)
+
+        theta = filtered_theta_gyro # filtered_theta_drivebase
 
         x += math.cos(theta) * distance
         y += math.sin(theta) * distance
+        trajectory.add(x, y)
+
+        # Trajectoire brute (sans Kalman)
+        theta_brute += theta_gyro
+        x_brute += math.cos(theta_brute) * distance
+        y_brute += math.sin(theta_brute) * distance
+        trajectory_brute.add(x_brute, y_brute)
+
+        # Trajectoire filtrée (avec Kalman (gyro ou drivebase))
+        theta_kalman += filtered_theta_gyro
+        x_kalman += math.cos(theta_kalman) * distance
+        y_kalman += math.sin(theta_kalman) * distance
+        trajectory_kalman.add(x_kalman, y_kalman)
+
         motors.drive_base.reset()
-        print(str(x) + ", " + str(y))
+        
+        print(str(x_brute) + ", " + str(y_brute) + " BRUTE")
+        print(str(x_kalman) + ", " + str(y_kalman) + " KALMAN")
 
         # Affichage console avec les 3 composantes
         # print(f"PID | Iter: {i:3d} | P: {proportional_part:+4.0f} | I: {integral_part:+4.0f} | D: {derivative_part:+4.0f} | Corr: {correction:+4.0f}")
         time.sleep(LOOP_DELAY)
 
+    trajectory_brute.export("trajectory_brute.csv")
+    trajectory_kalman.export("trajectory_kalman.csv")
     motors.drive_base.stop()
     print("=== FIN TEST PROPORTIONNEL-INTÉGRAL-DÉRIVÉ ===\n")

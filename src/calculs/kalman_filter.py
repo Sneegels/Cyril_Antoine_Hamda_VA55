@@ -1,4 +1,5 @@
 class KalmanFilter:
+
     def __init__(self, process_variance, measurement_variance, estimated_measurement_variance):
         self.process_variance = process_variance
         self.measurement_variance = measurement_variance
