@@ -1,3 +1,5 @@
+#!/usr/bin/env pybricks-micropython
+
 from src.tests.bangbang_test import test_bangbang
 from src.tests.p_test import test_proportional
 from src.tests.pi_test import test_pi_controller
@@ -59,7 +61,7 @@ def main():
     # print(f"  - Bang-Bang: {logger_bb.filepath}")
     # print(f"  - Proportionnel: {logger_p.filepath}")
     # print(f"  - PI: {logger_pi.filepath}")
-    print(f"  - PID: {logger_pid.filepath}")
+    print(str("  - PID: {logger_pid.filepath}"))
 
     print("\nPROGRAMME TERMINÉ")
 

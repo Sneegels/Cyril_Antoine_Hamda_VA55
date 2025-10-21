@@ -14,7 +14,7 @@ class TrajectoryLogger:
         """Exporte la trajectoire dans un fichier CSV."""
         with open(filename, "w") as f:
             for x, y in self.positions:
-                f.write(f"{x},{y}\n")
+                f.write(str("{},{}\n".format(x, y)))
 
     def reset(self):
         """Réinitialise la trajectoire enregistrée."""

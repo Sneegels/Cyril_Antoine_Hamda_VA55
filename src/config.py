@@ -6,13 +6,13 @@ from pybricks.parameters import Port
 LEFT_MOTOR_PORT = Port.B
 RIGHT_MOTOR_PORT = Port.C
 COLOR_SENSOR_PORT = Port.S3
-GYRO_SENSOR_PORT = Port.S4
+GYRO_SENSOR_PORT = Port.S1
 
 # =============================================================================
 # CONFIGURATION DRIVEBASE
 # =============================================================================
 WHEEL_DIAMETER = 55  # mm - Diamètre des roues
-AXLE_TRACK = 119  # mm - Distance entre roues
+AXLE_TRACK = 108  # mm - Distance entre roues
 
 # =============================================================================
 # CONFIGURATION CONTRÔLEURS
@@ -45,5 +45,5 @@ PID_SPEED = 140  # mm/s
 
 
 # Paramètres généraux
-LOOP_ITERATIONS = 400  # Nombre d'itérations par test
+LOOP_ITERATIONS = 1000  # Nombre d'itérations par test
 LOOP_DELAY = 0.1  # Délai entre itérations (secondes)

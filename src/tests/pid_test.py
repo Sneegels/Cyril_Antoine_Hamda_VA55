@@ -12,10 +12,10 @@ def test_pid_controller(motors, color_sensor, gyro_sensor, logger, status):
     controller = PIDController(kp=PID_KP, ki=PID_KI, kd=PID_KD, setpoint=PID_SETPOINT)
     base_speed = PID_SPEED
     start_time = time.time()
-    trajectory = TrajectoryLogger()
 
     trajectory_brute = TrajectoryLogger()
     trajectory_kalman = TrajectoryLogger()
+    theta_gyro, theta_drivebase = 0, 0
     x_brute, y_brute, theta_brute = 0, 0, 0
     x_kalman, y_kalman, theta_kalman = 0, 0, 0
 
@@ -69,15 +69,9 @@ def test_pid_controller(motors, color_sensor, gyro_sensor, logger, status):
         theta_gyro = math.radians(angle_gyro)
         filtered_theta_gyro = kalman_filter_gyro.update(theta_gyro)
 
-        angle = motors.drive_base.angle()
-        theta += math.radians(angle)
-        filtered_theta_drivebase = kalman_filter_drivebase.update(theta)
-
-        theta = filtered_theta_gyro # filtered_theta_drivebase
-
-        x += math.cos(theta) * distance
-        y += math.sin(theta) * distance
-        trajectory.add(x, y)
+        angle_drivebase = motors.drive_base.angle()
+        theta_drivebase = math.radians(angle_drivebase)
+        #filtered_theta_drivebase = kalman_filter_drivebase.update(theta)
 
         # Trajectoire brute (sans Kalman)
         theta_brute += theta_gyro
@@ -86,7 +80,7 @@ def test_pid_controller(motors, color_sensor, gyro_sensor, logger, status):
         trajectory_brute.add(x_brute, y_brute)
 
         # Trajectoire filtrée (avec Kalman (gyro ou drivebase))
-        theta_kalman += filtered_theta_gyro
+        theta_kalman += filtered_theta_gyro # filtered_theta_drivebase
         x_kalman += math.cos(theta_kalman) * distance
         y_kalman += math.sin(theta_kalman) * distance
         trajectory_kalman.add(x_kalman, y_kalman)
