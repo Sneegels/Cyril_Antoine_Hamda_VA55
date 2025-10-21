@@ -37,7 +37,7 @@ PI_SETPOINT = OPTIMAL_THRESHOLD
 PI_SPEED = 125  # mm/s
 
 # Proportional-Integral-Derivative Controller
-PID_KP = 0.6
+PID_KP = 0.8
 PID_KI = 0.04
 PID_KD = 1.2
 PID_SETPOINT = OPTIMAL_THRESHOLD
@@ -45,5 +45,5 @@ PID_SPEED = 140  # mm/s
 
 
 # Paramètres généraux
-LOOP_ITERATIONS = 1000  # Nombre d'itérations par test
+LOOP_ITERATIONS = 800  # Nombre d'itérations par test
 LOOP_DELAY = 0.1  # Délai entre itérations (secondes)

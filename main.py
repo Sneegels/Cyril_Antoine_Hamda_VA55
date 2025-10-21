@@ -61,7 +61,7 @@ def main():
     # print(f"  - Bang-Bang: {logger_bb.filepath}")
     # print(f"  - Proportionnel: {logger_p.filepath}")
     # print(f"  - PI: {logger_pi.filepath}")
-    print(str("  - PID: {logger_pid.filepath}"))
+    # print(str("  - PID: {logger_pid.filepath}"))
 
     print("\nPROGRAMME TERMINÉ")
 
