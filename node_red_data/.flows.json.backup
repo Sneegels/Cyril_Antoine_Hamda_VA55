@@ -1,0 +1,79 @@
+[
+    {
+        "id": "ef66c2e296b22e6f",
+        "type": "tab",
+        "label": "Flux 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "196cfafd048a1e21",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "27a9c7406f19f649",
+        "type": "mqtt in",
+        "z": "ef66c2e296b22e6f",
+        "name": "",
+        "topic": "$SYS/broker/uptime",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "196cfafd048a1e21",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 400,
+        "wires": [
+            [
+                "dd1656f1faa45d04"
+            ]
+        ]
+    },
+    {
+        "id": "dd1656f1faa45d04",
+        "type": "debug",
+        "z": "ef66c2e296b22e6f",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 400,
+        "wires": []
+    }
+]

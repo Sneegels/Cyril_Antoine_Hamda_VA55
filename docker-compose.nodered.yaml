@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  nodered:
+    image: nodered/node-red
+    container_name: mynodered
+    ports:
+      - "1880:1880"
+    volumes:
+      - ./node_red_data:/data
+    networks:
+      - iotnet
+    restart: unless-stopped
+
+networks:
+  iotnet:
+    name: iotnet
+    driver: bridge
