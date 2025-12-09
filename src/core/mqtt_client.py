@@ -1,7 +1,6 @@
 import time
 import _thread
-from umqtt.simple import MQTTClient
-import network
+from umqtt.robust import MQTTClient
 
 
 class MQTTClientThreaded:
@@ -10,23 +9,31 @@ class MQTTClientThreaded:
         client_id,
         broker,
         port=1883,
+        topic_sub=None,
         user=None,
         password=None,
-        topic_sub=None,
         loop_delay=1,
     ):
         self.client_id = client_id
         self.broker = broker
         self.port = port
+        self.topic_sub = topic_sub
         self.user = user
         self.password = password
-        self.topic_sub = topic_sub
         self.loop_delay = loop_delay
+
+        self.publish_queue = []
+        self.queue_mutex = _thread.allocate_lock()
 
         self.client = MQTTClient(client_id, broker, port, user, password)
         self.client.set_callback(self.on_message)
 
         self._running = False
+
+    class MqttMessage:
+        def __init__(self, topic, msg):
+            self.topic = topic
+            self.msg = msg
 
     def connect(self):
         """Se connecte au broker et s'abonne si nécessaire."""
@@ -43,12 +50,19 @@ class MQTTClientThreaded:
 
     def publish(self, topic, msg):
         """Publie un message sur un topic."""
-        self.client.publish(topic, msg)
+        self.queue_mutex.acquire()
+        self.publish_queue.append(self.MqttMessage(topic, msg))
+        self.queue_mutex.release()
 
     def _loop(self):
         """Boucle interne exécutée dans le thread."""
         while self._running:
             self.client.check_msg()
+            self.queue_mutex.acquire()
+            while self.publish_queue:
+                message = self.publish_queue.pop(0)
+                self.client.publish(message.topic, message.msg)
+            self.queue_mutex.release()
             time.sleep(self.loop_delay)
         print("Thread MQTT arrêté.")
 

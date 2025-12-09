@@ -11,7 +11,7 @@
         "id": "196cfafd048a1e21",
         "type": "mqtt-broker",
         "name": "",
-        "broker": "localhost",
+        "broker": "mymosquitto",
         "port": 1883,
         "clientid": "",
         "autoConnect": true,
@@ -43,7 +43,7 @@
         "type": "mqtt in",
         "z": "ef66c2e296b22e6f",
         "name": "",
-        "topic": "$SYS/broker/uptime",
+        "topic": "robot/status",
         "qos": "2",
         "datatype": "auto-detect",
         "broker": "196cfafd048a1e21",
@@ -51,11 +51,11 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 250,
+        "x": 230,
         "y": 400,
         "wires": [
             [
-                "dd1656f1faa45d04"
+                "756ed6950d70ee14"
             ]
         ]
     },
@@ -74,6 +74,24 @@
         "statusType": "auto",
         "x": 480,
         "y": 400,
+        "wires": []
+    },
+    {
+        "id": "756ed6950d70ee14",
+        "type": "mqtt out",
+        "z": "ef66c2e296b22e6f",
+        "name": "",
+        "topic": "robot/commands",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "196cfafd048a1e21",
+        "x": 490,
+        "y": 480,
         "wires": []
     }
 ]

@@ -3,10 +3,10 @@ from pybricks.parameters import Port
 # =============================================================================
 # CONFIGURATION HARDWARE
 # =============================================================================
-LEFT_MOTOR_PORT = Port.B
-RIGHT_MOTOR_PORT = Port.C
-COLOR_SENSOR_PORT = Port.S3
-GYRO_SENSOR_PORT = Port.S1
+LEFT_MOTOR_PORT = Port.A
+RIGHT_MOTOR_PORT = Port.B
+COLOR_SENSOR_PORT = Port.S2
+GYRO_SENSOR_PORT = Port.S3
 
 # =============================================================================
 # CONFIGURATION DRIVEBASE

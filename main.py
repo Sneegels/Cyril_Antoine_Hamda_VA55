@@ -11,12 +11,12 @@ from src.sensors.color_sensor import ColorSensorWrapper
 from src.sensors.gyro_sensor import GyroSensorWrapper
 from src.core.logger import Logger
 from src.core.robot_status import RobotStatus
+from src.core.mqtt_client import MQTTClientThreaded
 from pybricks.parameters import Port
 from pybricks.ev3devices import ColorSensor
 
 
 def main():
-
     """Fonction principale - Exécute les tests des contrôleurs"""
     print("DÉMARRAGE DU PROGRAMME DE SUIVI DE LIGNE")
     print("=" * 50)
@@ -27,18 +27,31 @@ def main():
     # Initialisation des composants
     print("Initialisation des composants...")
     motors = MotorController(
-        config.LEFT_MOTOR_PORT, config.RIGHT_MOTOR_PORT, config.WHEEL_DIAMETER, config.AXLE_TRACK
+        config.LEFT_MOTOR_PORT,
+        config.RIGHT_MOTOR_PORT,
+        config.WHEEL_DIAMETER,
+        config.AXLE_TRACK,
     )
     color_sensor = ColorSensorWrapper(config.COLOR_SENSOR_PORT)
-    gyro_sensor = GyroSensorWrapper(config.GYRO_SENSOR_PORT)
+    # gyro_sensor = GyroSensorWrapper(config.GYRO_SENSOR_PORT)
     robot_status = RobotStatus()
+    mqtt_client = MQTTClientThreaded(
+        "Antoine's robot", "192.168.0.100", 1883, "robot/commands"
+    )
+    mqtt_client.connect()
+    mqtt_client.start()
+    mqtt_client.publish("robot/status", "started")
+
+    while True:
+        pass  # Boucle principale vide pour laisser le thread MQTT actif
+    mqtt_client.stop()
 
     # Initialisation des loggers
     print("Initialisation des loggers...")
-    #logger_bb = Logger("logs_bangbang")
-    #logger_p = Logger("logs_proportional")
-    #logger_pi = Logger("logs_pi")
-    logger_pid = Logger("logs_pid")
+    # logger_bb = Logger("logs_bangbang")
+    # logger_p = Logger("logs_proportional")
+    # logger_pi = Logger("logs_pi")
+    # logger_pid = Logger("logs_pid")
 
     print("Initialisation terminée\n")
 
@@ -54,7 +67,7 @@ def main():
     # test_pi_controller(motors, color_sensor, logger_pi, robot_status)
 
     # Test Proportionnel-Intégral-Dérivé
-    test_pid_controller(motors, color_sensor, gyro_sensor, logger_pid, robot_status)
+    # test_pid_controller(motors, color_sensor, gyro_sensor, logger_pid, robot_status)
 
     # Affichage des fichiers de logs générés
     print("FICHIERS DE LOGS GÉNÉRÉS :")
@@ -64,6 +77,7 @@ def main():
     # print(str("  - PID: {logger_pid.filepath}"))
 
     print("\nPROGRAMME TERMINÉ")
+
 
 if __name__ == "__main__":
     main()
