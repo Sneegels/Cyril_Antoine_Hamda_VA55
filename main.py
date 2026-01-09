@@ -33,25 +33,18 @@ def main():
         config.AXLE_TRACK,
     )
     color_sensor = ColorSensorWrapper(config.COLOR_SENSOR_PORT)
-    # gyro_sensor = GyroSensorWrapper(config.GYRO_SENSOR_PORT)
+    gyro_sensor = GyroSensorWrapper(config.GYRO_SENSOR_PORT)
     robot_status = RobotStatus()
     mqtt_client = MQTTClientThreaded(
-        "Antoine's robot", "192.168.0.100", 1883, "robot/commands"
+        config.MQTT_CLIENT_NAME, config.MQTT_IP, config.MQTT_PORT
     )
-    mqtt_client.connect()
-    mqtt_client.start()
-    mqtt_client.publish("robot/status", "started")
-
-    while True:
-        pass  # Boucle principale vide pour laisser le thread MQTT actif
-    mqtt_client.stop()
 
     # Initialisation des loggers
     print("Initialisation des loggers...")
     # logger_bb = Logger("logs_bangbang")
     # logger_p = Logger("logs_proportional")
     # logger_pi = Logger("logs_pi")
-    # logger_pid = Logger("logs_pid")
+    logger_pid = Logger("logs_pid")
 
     print("Initialisation terminée\n")
 
@@ -67,7 +60,10 @@ def main():
     # test_pi_controller(motors, color_sensor, logger_pi, robot_status)
 
     # Test Proportionnel-Intégral-Dérivé
-    # test_pid_controller(motors, color_sensor, gyro_sensor, logger_pid, robot_status)
+    test_pid_controller(
+        motors, color_sensor, gyro_sensor, logger_pid, robot_status, mqtt_client
+    )
+    mqtt_client.stop()
 
     # Affichage des fichiers de logs générés
     print("FICHIERS DE LOGS GÉNÉRÉS :")

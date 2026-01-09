@@ -7,6 +7,7 @@ from pybricks.ev3devices import Motor
 from pybricks.parameters import Port, Stop
 from pybricks.robotics import DriveBase
 
+
 class MotorController:
 
     def __init__(self, left_port, right_port, wheel_diameter, axle_track):
@@ -16,10 +17,10 @@ class MotorController:
 
         # DriveBase avec paramètres configurables
         self.drive_base = DriveBase(
-            self.left_motor, 
-            self.right_motor, 
+            self.left_motor,
+            self.right_motor,
             wheel_diameter=wheel_diameter,  # ← PARAMÈTRE
-            axle_track=axle_track          # ← PARAMÈTRE
+            axle_track=axle_track,  # ← PARAMÈTRE
         )
 
     def stop(self, stop_type=Stop.BRAKE):
@@ -40,10 +41,10 @@ class MotorController:
                 "angle": angle,
                 "turn_rate": turn_rate,
                 "left_angle": self.left_motor.angle(),
-                "right_angle": self.right_motor.angle()
+                "right_angle": self.right_motor.angle(),
             }
         except:
             return {
                 "left_angle": self.left_motor.angle(),
-                "right_angle": self.right_motor.angle()
+                "right_angle": self.right_motor.angle(),
             }

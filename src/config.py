@@ -47,3 +47,8 @@ PID_SPEED = 140  # mm/s
 # Paramètres généraux
 LOOP_ITERATIONS = 800  # Nombre d'itérations par test
 LOOP_DELAY = 0.1  # Délai entre itérations (secondes)
+
+# MQTT Config
+MQTT_CLIENT_NAME = "Cyril's robot"
+MQTT_IP = "192.168.0.100"
+MQTT_PORT = 1883
